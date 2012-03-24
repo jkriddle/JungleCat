@@ -1,0 +1,35 @@
+# JungleCat
+
+Small TCP server/listener that runs commands on listening computer.
+
+## Available commands:
+
+*****
+
+## youtube
+
+Plays a YouTube video.
+
+**Parameter(s):**
+[1] the YouTube vide ID
+
+    youtube nBFhvrAOFqY
+
+## image
+
+Displays an image
+
+    image http://29.media.tumblr.com/tumblr_ldp3jukzHo1qb9a2wo1_500.png
+
+
+**Parameter(s):**
+[1] URL to image. Animated cat gifs encouraged.
+
+## say
+
+Shows an alert box.
+
+    say Hello, world!
+
+**Parameter(s):**
+[1] Message to broadcast.
