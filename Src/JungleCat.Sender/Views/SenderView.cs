@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using JungleCat.Sender.Presenters;
+using JungleCat.Common;
 
 namespace JungleCat.Sender
 {
@@ -18,6 +19,8 @@ namespace JungleCat.Sender
         private SenderViewPresenter presenter;
         public event EventHandler SendButtonClick;
         public event EventHandler CloseButtonClick;
+        public event EventHandler ScanForReceiverClick;
+        public event EventHandler ScanPortsClick;
 
         #endregion
 
@@ -26,6 +29,7 @@ namespace JungleCat.Sender
         public SenderView()
         {
             InitializeComponent();
+            MainMenuStrip.Renderer = new MainToolStripRenderer();
             this.Load += new EventHandler(initializeView);
             this.presenter = new SenderViewPresenter(this);
         }
@@ -38,6 +42,8 @@ namespace JungleCat.Sender
         {
             this.CloseButton.Click += new EventHandler(OnCloseButtonClicked);
             this.SendButton.Click += new EventHandler(OnSendButtonClicked);
+            this.ScanPortsToolStripMenuItem.Click += new EventHandler(OnScanPortsClick);
+            this.ScanForReceiverToolStripMenuItem.Click += new EventHandler(OnScanForReceiverClick);
         }
 
         #endregion
@@ -88,7 +94,17 @@ namespace JungleCat.Sender
             }
             set
             {
-                LogTextBox.Text = value;
+                if (LogTextBox.InvokeRequired)
+                {
+                    LogTextBox.Invoke(new MethodInvoker(delegate
+                    {
+                        LogTextBox.Text = value;
+                    }));
+                }
+                else
+                {
+                    LogTextBox.Text = value;
+                }
             }
         }
 
@@ -120,9 +136,41 @@ namespace JungleCat.Sender
                 closeButtonClicked(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Scan for receiver button clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnScanForReceiverClick(object sender, EventArgs e)
+        {
+            EventHandler scanForReceiverClick = this.ScanForReceiverClick;
+            if (scanForReceiverClick != null)
+            {
+                scanForReceiverClick(this, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Scan for ports button clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnScanPortsClick(object sender, EventArgs e)
+        {
+            EventHandler scanPortsClick = this.ScanPortsClick;
+            if (scanPortsClick != null)
+            {
+                scanPortsClick(this, EventArgs.Empty);
+            }
+        }
         #endregion
 
         #region Public Methods
+
+        public void RefreshScreen()
+        {
+            this.Refresh();
+        }
 
         public void CloseView()
         {
@@ -152,6 +200,12 @@ namespace JungleCat.Sender
         }
 
         #endregion
+
+        private void SenderView_Load(object sender, EventArgs e)
+        {
+            MainMenuStrip.BackColor = Color.Black;
+            MainMenuStrip.ForeColor = Color.Yellow;
+        }
 
     }
 }

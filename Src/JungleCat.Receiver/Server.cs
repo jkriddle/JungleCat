@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Net;
 
-namespace JungleCat.Common
+namespace JungleCat.Receiver
 {
     /// <summary>
     /// TCP server implementation
@@ -17,6 +17,9 @@ namespace JungleCat.Common
         private NetworkStream clientStream;
         private TcpListener tcpListener;
         private Thread listenThread;
+        public event EventHandler ConnectionError;
+        private int port;
+        private Thread clientThread;
 
         /// <summary>
         /// Event to run after message has been received successfully.
@@ -25,9 +28,17 @@ namespace JungleCat.Common
 
         public Server(int port)
         {
+            this.port = port;
             this.tcpListener = new TcpListener(IPAddress.Any, port);
             this.listenThread = new Thread(new ThreadStart(ListenForClients));
+            listenThread.IsBackground = true;
             this.listenThread.Start();
+        }
+
+        public void CloseConnection()
+        {
+            clientThread.Abort();
+            clientThread.Join();
         }
 
         /// <summary>
@@ -35,17 +46,28 @@ namespace JungleCat.Common
         /// </summary>
         private void ListenForClients()
         {
-            this.tcpListener.Start();
-
-            while (true)
+            try
             {
-                // blocks until a client has connected to the server
-                TcpClient client = this.tcpListener.AcceptTcpClient();
+                this.tcpListener.Start();
 
-                // create a thread to handle communication 
-                // with connected client
-                Thread clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
-                clientThread.Start(client);
+                while (true)
+                {
+                    // blocks until a client has connected to the server
+                    TcpClient client = this.tcpListener.AcceptTcpClient();
+
+                    // create a thread to handle communication 
+                    // with connected client
+                    clientThread = new Thread(new ParameterizedThreadStart(HandleClientComm));
+                    clientThread.IsBackground = true;
+                    clientThread.Start(client);
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ConnectionError != null)
+                {
+                    ConnectionError(this, EventArgs.Empty);
+                }
             }
         }
 
@@ -84,7 +106,7 @@ namespace JungleCat.Common
 
                 // message has successfully been received
                 ASCIIEncoding encoder = new ASCIIEncoding();
-                string commandText = encoder.GetString(message, 0, bytesRead);
+                string commandText = encoder.GetString(message, 0, bytesRead).Trim();
                 System.Diagnostics.Debug.WriteLine(commandText);
 
                 if (CommandReceived != null)
@@ -92,8 +114,10 @@ namespace JungleCat.Common
                     CommandReceived(this, new CommandReceivedEventArgs(commandText));
                 }
 
+                string response = "MESSAGE RECEIVED";
+
                 // send response to client
-                byte[] buffer = encoder.GetBytes("MESSAGE RECEIVED");
+                byte[] buffer = encoder.GetBytes(response);
 
                 clientStream.Write(buffer, 0, buffer.Length);
                 clientStream.Flush();

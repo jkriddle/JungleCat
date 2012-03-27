@@ -7,13 +7,14 @@ using System.Net;
 using System.Threading;
 using System.IO;
 
-namespace JungleCat.Common
+namespace JungleCat.Sender
 {
     /// <summary>
     /// Simple TCP endpoint client to send a command to the listening server.
     /// </summary>
     public class Client
     {
+        public event EventHandler<ResponseReceivedEventArgs> OnResponseReceived;
 
         private TcpClient server;
         private string endpointIP;
@@ -29,10 +30,19 @@ namespace JungleCat.Common
 
         public void ReceiveMessages()
         {
-            StreamReader srReceiver = new StreamReader(server.GetStream());
-            string lastResponse = srReceiver.ReadLine();
+            /*StreamReader srReceiver = new StreamReader(server.GetStream());
+            string response = srReceiver.ReadLine();
+            if (OnResponseReceived != null)
+            {
+                OnResponseReceived(this, new ResponseReceivedEventArgs(response));
+            }*/
+        }
 
-            string x = "";
+        public void CloseConnection()
+        {
+            // @TODO I think this is bad to do (calling Abort)
+            messageThread.Abort();
+            messageThread.Join();
         }
 
         /// <summary>
@@ -49,6 +59,8 @@ namespace JungleCat.Common
                 server = new TcpClient();
                 IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Parse(endpointIP), port);
                 server.Connect(serverEndPoint);
+
+                 
                 messageThread = new Thread(new ThreadStart(ReceiveMessages));
                 messageThread.IsBackground = true;
                 messageThread.Start();

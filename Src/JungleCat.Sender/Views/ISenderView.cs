@@ -9,6 +9,8 @@ namespace JungleCat.Sender.Presenters
     {
         event EventHandler CloseButtonClick;
         event EventHandler SendButtonClick;
+        event EventHandler ScanForReceiverClick;
+        event EventHandler ScanPortsClick;
 
         string CommandText { get; set; }
         string EndpointIP { get; set; }
@@ -16,5 +18,6 @@ namespace JungleCat.Sender.Presenters
         string Log { get; set; }
 
         void CloseView();
+        void RefreshScreen();
     }
 }

@@ -47,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandReceivedEventArgs.cs" />
+    <Compile Include="Server.cs" />
     <Compile Include="Views\ImageView.cs">
       <SubType>Form</SubType>
     </Compile>

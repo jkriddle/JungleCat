@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace JungleCat.Common
+namespace JungleCat.Receiver
 {
     public class CommandReceivedEventArgs : EventArgs
     {

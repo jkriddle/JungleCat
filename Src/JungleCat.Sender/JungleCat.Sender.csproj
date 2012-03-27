@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client.cs" />
+    <Compile Include="MainToolStripRenderer.cs" />
+    <Compile Include="ResponseReceivedEventArgs.cs" />
     <Compile Include="Views\ISenderView.cs" />
     <Compile Include="Presenters\SenderViewPresenter.cs" />
     <Compile Include="Views\SenderView.cs">

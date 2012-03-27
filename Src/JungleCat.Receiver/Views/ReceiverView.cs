@@ -36,6 +36,10 @@ namespace JungleCat.Receiver
                         LogTextBox.Text = value;
                     }));
                 }
+                else
+                {
+                    LogTextBox.Text = value;
+                }
             }
         }
 
